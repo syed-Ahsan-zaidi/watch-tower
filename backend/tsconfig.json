@@ -8,10 +8,16 @@
     "outDir": "./dist",
     "rootDir": "./",
     "strict": true,
-    "baseUrl": "./",
-    "paths": {
-      "*": ["node_modules/*"]
-    }
+    "baseUrl": "./"
   },
-  "exclude": ["node_modules", "dist", "frontend"]
+  "include": [
+    "src/**/*",
+    "prisma.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "../frontend",
+    "frontend"
+  ]
 }
