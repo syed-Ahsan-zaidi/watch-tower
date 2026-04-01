@@ -5,31 +5,34 @@ import monitorRoutes from './routes/monitorRoutes';
 import { startScheduler } from './services/scheduler';
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001; // Railway automatically port assign karta hai
 
-// Middlewares (ORDER IS IMPORTANT)
- app.use(cors({
+// 1. CORS Configuration (Order: Pehle CORS)
+app.use(cors({
   origin: [
-    "https://watch-tower-mu.vercel.app", 
-    "https://watch-tower-phk4sa7p0-syed-ahsan-zaidis-projects.vercel.app"
+    "https://watch-tower-mu.vercel.app",
+    "https://watch-tower-phk4sa7p0-syed-ahsan-zaidis-projects.vercel.app",
+    "https://watch-tower-c3raxpzqu-syed-ahsan-zaidis-projects.vercel.app"
   ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true
 }));
-// Pehle CORS allow karein
-app.use(express.json()); // Phir JSON parse karein
 
-// Routes
+// 2. Body Parser (Order: Phir JSON parsing)
+app.use(express.json());
+
+// 3. Routes
 app.use('/api/monitors', monitorRoutes);
 
-// Worker
+// 4. Background Worker (Starts the website checking logic)
 startScheduler();
 
+// Health Check Route
 app.get('/', (req, res) => {
-  res.send('WatchTower Backend is running...');
+  res.send('WatchTower Backend is running... 🚀');
 });
 
+// Server Start
 app.listen(PORT, () => {
-  console.log(`🚀 WatchTower live on http://localhost:${PORT}`);
+  console.log(`🚀 WatchTower live on port ${PORT}`);
 });
-
