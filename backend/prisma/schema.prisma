@@ -1,0 +1,38 @@
+// This is your Prisma schema file
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+
+}
+
+// 1. Monitor Model: Jis website ko check karna hai uski detail
+model Monitor {
+  id         String      @id @default(uuid())
+  name       String      // e.g., "My Portfolio"
+  url        String      // e.g., "https://google.com"
+  interval   Int         @default(60) // Seconds mein check ka gap
+  status     String      @default("UP") // Current status: UP ya DOWN
+  userId     String      @default("default-user")
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  
+  // Relationship: Aik monitor ki bohot saari heartbeats ho sakti hain
+  heartbeats Heartbeat[]
+}
+
+// 2. Heartbeat Model: Har check-up ka record (Tracing data)
+model Heartbeat {
+  id         String   @id @default(uuid())
+  monitorId  String
+  monitor    Monitor  @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  statusCode Int?     // HTTP Status (e.g., 200, 404, 500)
+  latency    Int      // Response time in milliseconds (The "Trace" value)
+  timestamp  DateTime @default(now())
+
+  @@index([monitorId]) // Performance ke liye index zaroori hai
+}
